@@ -1,0 +1,10 @@
+[environments]
+  [environments.production]
+    [environments.production.services]
+      [environments.production.services.bot]
+        source = "bot/"
+        startCommand = "npm start"
+
+      [environments.production.services.frontend]
+        source = "frontend/"
+        startCommand = "npm start"
