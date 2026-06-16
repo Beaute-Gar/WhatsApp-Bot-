@@ -39,7 +39,7 @@ const writeJSON = (file, data) => fs.writeFileSync(file, JSON.stringify(data, nu
 const app = express()
 
 app.use(cors({
-  origin: [FRONTEND_URL, 'http://localhost:3000', /\.vercel\.app$/],
+  origin: [FRONTEND_URL, 'http://localhost:3000', /\.vercel\.app$/, /\.netlify\.app$/],
   credentials: true,
 }))
 app.use(express.json())

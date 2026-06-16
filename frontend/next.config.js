@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    BOT_SERVER_URL: process.env.BOT_SERVER_URL || 'http://localhost:4000',
+    BOT_SERVER_URL: 'https://bot-production-a4de.up.railway.app',
   },
 }
 

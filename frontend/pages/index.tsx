@@ -4,7 +4,7 @@ import styles from '../styles/Home.module.css'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Lang = 'fr' | 'en'
-type TabId = 'dashboard' | 'groups' | 'broadcast' | 'scheduled' | 'commands' | 'settings'
+type TabId = 'dashboard' | 'groups' | 'broadcast' | 'scheduled' | 'commands'
 type BotStatus = { ready: boolean; groupsSelected: number; groupsDetected: number; uptime?: number }
 type Group = { id: string; name: string; memberCount: number; isAdmin: boolean; selected: boolean }
 type ScheduledMsg = { id: string; groupId: string; groupName: string; message: string; time: string; active: boolean }
@@ -26,7 +26,7 @@ const T = {
     disconnected: 'Bot déconnecté',
     botOnline: 'Bot en ligne',
     botOffline: 'Bot hors ligne',
-    tabs: { dashboard: 'Tableau de bord', groups: 'Groupes', broadcast: 'Diffusion', scheduled: 'Planifiés', commands: 'Commandes', settings: 'Paramètres' },
+    tabs: { dashboard: 'Tableau de bord', groups: 'Groupes', broadcast: 'Diffusion', scheduled: 'Planifiés', commands: 'Commandes' },
     statsGroups: 'Groupes gérés',
     statsMembers: 'Membres totaux',
     statsUptime: 'Disponibilité',
@@ -54,13 +54,10 @@ const T = {
     scheduledDelete: 'Supprimer',
     commandsTitle: 'Commandes automatiques',
     commandsInfo: 'Ces commandes sont disponibles dans tous vos groupes gérés.',
-    settingsTitle: 'Paramètres du bot',
-    settingsBotUrl: 'URL du serveur bot',
-    settingsSave: 'Sauvegarder',
-    settingsSaved: '✓ Paramètres sauvegardés',
+
     howTitle: 'Comment démarrer',
-    how1: 'Saisissez votre numéro WhatsApp admin et cliquez sur Connecter',
-    how2: 'Scannez le QR code affiché dans la console de votre serveur bot',
+    how1: 'Le bot WhatsApp démarre automatiquement — un QR code apparaît dans la console Railway',
+    how2: 'Scannez le QR code avec WhatsApp (Paramètres → Appareils liés → Lier un appareil)',
     how3: 'Le bot détecte automatiquement vos groupes — sélectionnez les cibles',
     how4: 'Diffusez des messages, planifiez des envois et gérez vos communautés',
     noServer: 'Serveur bot inaccessible. Configurez BOT_SERVER_URL.',
@@ -83,7 +80,7 @@ const T = {
     disconnected: 'Bot disconnected',
     botOnline: 'Bot online',
     botOffline: 'Bot offline',
-    tabs: { dashboard: 'Dashboard', groups: 'Groups', broadcast: 'Broadcast', scheduled: 'Scheduled', commands: 'Commands', settings: 'Settings' },
+    tabs: { dashboard: 'Dashboard', groups: 'Groups', broadcast: 'Broadcast', scheduled: 'Scheduled', commands: 'Commands' },
     statsGroups: 'Managed groups',
     statsMembers: 'Total members',
     statsUptime: 'Uptime',
@@ -111,13 +108,10 @@ const T = {
     scheduledDelete: 'Delete',
     commandsTitle: 'Auto commands',
     commandsInfo: 'These commands are available in all your managed groups.',
-    settingsTitle: 'Bot settings',
-    settingsBotUrl: 'Bot server URL',
-    settingsSave: 'Save',
-    settingsSaved: '✓ Settings saved',
+
     howTitle: 'How to get started',
-    how1: 'Enter your admin WhatsApp number and click Connect',
-    how2: 'Scan the QR code displayed in your bot server console',
+    how1: 'The WhatsApp bot starts automatically — a QR code appears in the Railway console',
+    how2: 'Scan the QR code with WhatsApp (Settings → Linked devices → Link a device)',
     how3: 'The bot auto-detects your groups — select your targets',
     how4: 'Broadcast messages, schedule sends, and manage your communities',
     noServer: 'Bot server unreachable. Configure BOT_SERVER_URL.',
@@ -140,7 +134,6 @@ const COMMANDS = [
 export default function Home() {
   const [lang, setLang] = useState<Lang | null>(null)
   const [activeTab, setActiveTab] = useState<TabId>('dashboard')
-  const [number, setNumber] = useState('')
   const [connecting, setConnecting] = useState(false)
   const [botStatus, setBotStatus] = useState<BotStatus>({ ready: false, groupsSelected: 0, groupsDetected: 0 })
   const [groups, setGroups] = useState<Group[]>([])
@@ -149,7 +142,6 @@ export default function Home() {
   const [sending, setSending] = useState(false)
   const [scheduled, setScheduled] = useState<ScheduledMsg[]>([])
   const [newSched, setNewSched] = useState({ groupId: '', time: '09:00', message: '' })
-  const [botUrl, setBotUrl] = useState('')
   const [toasts, setToasts] = useState<Toast[]>([])
   const [msgsSent, setMsgsSent] = useState(0)
   const toastId = useRef(0)
@@ -201,9 +193,6 @@ export default function Home() {
     const saved = localStorage.getItem('dte_lang') as Lang | null
     if (saved) setLang(saved)
 
-    const savedUrl = localStorage.getItem('dte_bot_url')
-    if (savedUrl) setBotUrl(savedUrl)
-
     const msgs = parseInt(localStorage.getItem('dte_msgs_sent') || '0', 10)
     setMsgsSent(msgs)
   }, [])
@@ -226,33 +215,6 @@ export default function Home() {
     setLang(l)
     localStorage.setItem('dte_lang', l)
     fetchStatus()
-  }
-
-  // ─── Connect bot
-  const handleConnect = async () => {
-    const clean = number.replace(/[^0-9+]/g, '')
-    if (!clean || clean.replace('+', '').length < 9) {
-      toast(t.errNumber, 'err')
-      return
-    }
-    setConnecting(true)
-    try {
-      const res = await fetch('/api/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number: clean }),
-      })
-      const data = await res.json()
-      if (data.error) {
-        toast(data.error, 'err')
-      } else {
-        toast(data.message || t.connected, 'ok')
-        setTimeout(fetchStatus, 2000)
-      }
-    } catch {
-      toast(t.noServer, 'err')
-    }
-    setConnecting(false)
   }
 
   // ─── Save group selection
@@ -343,19 +305,6 @@ export default function Home() {
     } catch {
       toast(t.noServer, 'err')
     }
-  }
-
-  // ─── Save settings
-  const saveSettings = () => {
-    localStorage.setItem('dte_bot_url', botUrl)
-    toast(t.settingsSaved, 'ok')
-  }
-
-  // ─── Number input formatter
-  const handleNumberInput = (v: string) => {
-    let clean = v.replace(/[^0-9+]/g, '')
-    if (clean && !clean.startsWith('+')) clean = '+' + clean
-    setNumber(clean)
   }
 
   const selectedCount = groups.filter(g => g.selected).length
@@ -457,7 +406,7 @@ export default function Home() {
                   tab === 'broadcast' ? 'bullhorn' :
                   tab === 'scheduled' ? 'clock' :
                   tab === 'commands' ? 'terminal' :
-                  'cog'
+                  'chart-line'
                 }`} />
                 <span>{t.tabs[tab]}</span>
                 {tab === 'groups' && selectedCount > 0 && (
@@ -467,31 +416,7 @@ export default function Home() {
             ))}
           </nav>
 
-          <div className={styles.sidebarConnect}>
-            <div className={styles.connectLabel}>
-              <i className="fas fa-key" /> {t.connect}
-            </div>
-            <input
-              type="tel"
-              className={styles.connectInput}
-              placeholder={t.placeholder}
-              value={number}
-              onChange={e => handleNumberInput(e.target.value)}
-            />
-            <button
-              className={`${styles.connectBtn} ${botStatus.ready ? styles.connectBtnConnected : ''}`}
-              onClick={handleConnect}
-              disabled={connecting}
-            >
-              {connecting ? (
-                <><i className="fas fa-spinner fa-spin" /> {t.connecting}</>
-              ) : botStatus.ready ? (
-                <><i className="fas fa-check-circle" /> {t.connected}</>
-              ) : (
-                <><i className="fas fa-bolt" /> {t.btnConnect}</>
-              )}
-            </button>
-          </div>
+
         </aside>
 
         {/* Main content */}
@@ -764,64 +689,6 @@ export default function Home() {
                     </button>
                   </div>
                 ))}
-              </div>
-            </div>
-          )}
-
-          {/* ── SETTINGS ── */}
-          {activeTab === 'settings' && (
-            <div className={styles.tabContent}>
-              <div className={styles.tabHeader}>
-                <h2 className={styles.tabTitle}>{t.settingsTitle}</h2>
-              </div>
-              <div className={styles.card}>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>
-                    <i className="fas fa-server" /> {t.settingsBotUrl}
-                  </label>
-                  <input
-                    type="url"
-                    className={styles.input}
-                    placeholder="https://ton-bot.railway.app"
-                    value={botUrl}
-                    onChange={e => setBotUrl(e.target.value)}
-                  />
-                  <p className={styles.helpText}>
-                    {lang === 'fr'
-                      ? 'URL de ton serveur bot Node.js (Railway, Render, VPS…)'
-                      : 'Your Node.js bot server URL (Railway, Render, VPS…)'}
-                  </p>
-                </div>
-                <button className={styles.btnPrimary} onClick={saveSettings}>
-                  <i className="fas fa-floppy-disk" /> {t.settingsSave}
-                </button>
-              </div>
-
-              <div className={styles.card} style={{ marginTop: '16px' }}>
-                <div className={styles.cardHeader}><i className="fas fa-info-circle" /> Info</div>
-                <div className={styles.infoGrid}>
-                  <div className={styles.infoRow}>
-                    <span>Version</span><span>2.0.0</span>
-                  </div>
-                  <div className={styles.infoRow}>
-                    <span>Bot status</span>
-                    <span style={{ color: botStatus.ready ? 'var(--acc)' : 'var(--red)' }}>
-                      {botStatus.ready ? '● Online' : '○ Offline'}
-                    </span>
-                  </div>
-                  <div className={styles.infoRow}>
-                    <span>{lang === 'fr' ? 'Groupes détectés' : 'Detected groups'}</span>
-                    <span>{botStatus.groupsDetected}</span>
-                  </div>
-                  <div className={styles.infoRow}>
-                    <span>{lang === 'fr' ? 'Groupes actifs' : 'Active groups'}</span>
-                    <span style={{ color: 'var(--acc)' }}>{botStatus.groupsSelected}</span>
-                  </div>
-                  <div className={styles.infoRow}>
-                    <span>{lang === 'fr' ? 'Messages envoyés' : 'Messages sent'}</span>
-                    <span>{msgsSent}</span>
-                  </div>
-                </div>
               </div>
             </div>
           )}
