@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap');
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg:       #080a0e;
+  --bg1:      #0d1016;
+  --bg2:      #111418;
+  --bg3:      #161b22;
+  --border:   #1e2530;
+  --border2:  #2a3340;
+  --white:    #e8ecf0;
+  --white2:   #b8c0cc;
+  --dim:      #4a5565;
+  --dim2:     #6a7585;
+  --acc:      #25d366;
+  --acc2:     #1aaa50;
+  --acc3:     #128c3e;
+  --acc-glow: rgba(37,211,102,0.10);
+  --acc-dim:  rgba(37,211,102,0.06);
+  --gold:     #c9a84c;
+  --gold-glow:rgba(201,168,76,0.10);
+  --red:      #e05555;
+  --red-glow: rgba(224,85,85,0.10);
+  --font-ui:   'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif:'DM Serif Display', serif;
+  --radius:   0px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--acc-glow); color: var(--acc); }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg1); }
+::-webkit-scrollbar-thumb { background: var(--border2); }
+::-webkit-scrollbar-thumb:hover { background: var(--acc3); }
+
+input, button, select, textarea {
+  font-family: var(--font-ui);
+  outline: none;
+}
+
+a { text-decoration: none; color: inherit; }
+
+.orb {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(130px);
+}
+.orb-1 {
+  width: 600px; height: 600px;
+  top: -200px; right: -180px;
+  background: radial-gradient(circle, rgba(37,211,102,.06), transparent 70%);
+}
+.orb-2 {
+  width: 500px; height: 500px;
+  bottom: -150px; left: -150px;
+  background: radial-gradient(circle, rgba(201,168,76,.04), transparent 70%);
+}
+.orb-3 {
+  width: 300px; height: 300px;
+  top: 40%; left: 30%;
+  background: radial-gradient(circle, rgba(37,211,102,.03), transparent 70%);
+}
